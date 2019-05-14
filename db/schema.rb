@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_11_044201) do
+ActiveRecord::Schema.define(version: 2019_05_11_145316) do
+
+  create_table "favorites", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "micropost_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["micropost_id"], name: "index_favorites_on_micropost_id"
+    t.index ["user_id", "micropost_id"], name: "index_favorites_on_user_id_and_micropost_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
 
   create_table "microposts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "content"
@@ -30,6 +40,16 @@ ActiveRecord::Schema.define(version: 2019_05_11_044201) do
     t.index ["user_id"], name: "index_relationships_on_user_id"
   end
 
+  create_table "user_microposts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "microposts_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["microposts_id"], name: "index_user_microposts_on_microposts_id"
+    t.index ["user_id", "microposts_id"], name: "index_user_microposts_on_user_id_and_microposts_id", unique: true
+    t.index ["user_id"], name: "index_user_microposts_on_user_id"
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -38,7 +58,11 @@ ActiveRecord::Schema.define(version: 2019_05_11_044201) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "favorites", "microposts"
+  add_foreign_key "favorites", "users"
   add_foreign_key "microposts", "users"
   add_foreign_key "relationships", "users"
   add_foreign_key "relationships", "users", column: "follow_id"
+  add_foreign_key "user_microposts", "microposts", column: "microposts_id"
+  add_foreign_key "user_microposts", "users"
 end
